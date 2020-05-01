@@ -1,0 +1,22 @@
+---
+- hosts: app1
+  become: yes
+
+  tasks:
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+    
+    - name: Application install
+      yum: 
+        name: ksh
+        state: present
+
+    - name: add users
+      user:
+        name: lrsperkins
+        shell: /bin/ksh
+        groups: sudo
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: ~/ssh/id_rsa
