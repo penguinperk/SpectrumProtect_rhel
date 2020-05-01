@@ -25,11 +25,12 @@
         name: ksh
         state: present
 
-    - name: add users
+    - name: more complex items to add several users
       user:
-        name: lrsperkins
-        shell: /bin/bash
-        groups: sudo
-        generate_ssh_key: yes
-        ssh_key_bits: 2048
-        ssh_key_file: ~/.ssh/id_rsa
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        groups: "{{ item.groups }}"
+        state: present
+      with_items:
+        - { name: tsminst1, uid: 1001, groups: "tsmgrp, sudo" }
+        - { name: lrsperkins, uid: 1002, groups: sudo }
