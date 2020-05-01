@@ -22,8 +22,10 @@
 
     - name: Application install
       yum: 
-        name: ksh
         state: present
+        name:
+        - ksh
+        - lvm2
 
     - name: more complex items to add several users
       user:
@@ -34,3 +36,27 @@
       with_items:
         - { name: tsminst1, uid: 1001, groups: "tsmgrp, sudo" }
         - { name: lrsperkins, uid: 1002, groups: sudo }
+
+  #TODO: set password
+  #
+    - name: Creataing Spectrum Protect Directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: "774"
+        owner: tsminst1
+        group: tsmgrp
+        recurse: yes
+      with_items:
+        - '/tsm/db'
+        - '/tsm/db/db1'
+        - '/tsm/db/db2'
+        - '/tsm/db/db3'
+        - '/tsm/db/db4'
+        - '/tsm/log'
+        - '/tsm/log/active'
+        - '/tsm/log/archive'
+        - '/tsm/log/archfail'
+        - '/tsm/config'
+        - '/tsm/dbbackup'
+        - '/tsm/dbbackup/dbbackup1'
