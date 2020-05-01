@@ -7,6 +7,19 @@
       selinux:
         state: disabled
     
+    - name: add groups
+      group:
+        name: "{{ item }}"
+      with_items:
+        - sudo
+        - tsmgrp
+    
+    - name: Copy customized sudoers file in place
+      copy:
+        src: files/sudo
+        dest: /etc/sudoers.d/sudo
+        validate: /usr/sbin/visudo -csf %s
+
     - name: Application install
       yum: 
         name: ksh
@@ -15,8 +28,8 @@
     - name: add users
       user:
         name: lrsperkins
-        shell: /bin/ksh
+        shell: /bin/bash
         groups: sudo
         generate_ssh_key: yes
         ssh_key_bits: 2048
-        ssh_key_file: ~/ssh/id_rsa
+        ssh_key_file: ~/.ssh/id_rsa
