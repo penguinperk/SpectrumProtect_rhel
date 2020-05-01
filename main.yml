@@ -60,3 +60,33 @@
         - '/tsm/config'
         - '/tsm/dbbackup'
         - '/tsm/dbbackup/dbbackup1'
+
+    - name: partitioning Spectrum protect DB Volume
+      parted:
+        device: /dev/xvdc
+        number: 1
+        flags: [ lvm ] 
+        state: present
+
+    - name: Create SSD Partitions
+      lvg:
+        vg: container_vg
+        pvs: /dev/xvdc1
+    
+    - name: Create Archive Log 
+      lvol:
+        vg: container_vg
+        lv: arch_log_lv
+        size: 50G
+
+    - name: Create Container1
+      lvol:
+        vg: container_vg
+        lv: container1_lv 
+        size: 100G
+
+    - name: Create Container2
+      lvol:
+        vg: container_vg
+        lv: container2_lv 
+        size: 100G
