@@ -1,0 +1,5 @@
+ssd_disk: '/dev/xvdb'
+ssd_vg: 'db_vg'
+standard_disk: '/dev/xvdc'
+standard_vg: container_vg
+
