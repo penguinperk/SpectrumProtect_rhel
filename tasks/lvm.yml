@@ -1,0 +1,60 @@
+---
+    - name: partitioning Spectrum protect DB, Active Log and Config Volumes
+      parted:
+        device: "{{ ssd_disk }}"
+        number: 1
+        flags: [ lvm ]
+        state: present
+
+    - name: Creating test
+      lvg:
+        vg: "{{ ssd_vg }}"
+        pvs: "{{ ssd_disk }}1"
+
+    - name: Create Config Log LVM
+      lvol:
+        vg: "{{ ssd_vg }}"
+        lv: config_lv
+        size: 25G
+
+    - name: Create Active Log LVM
+      lvol:
+        vg: "{{ ssd_vg }}"
+        lv: actlog_lv
+        size: 25G
+
+    - name: Create DataBase LVM
+      lvol:
+        vg: "{{ ssd_vg }}"
+        lv: db1_lv
+        size: 25G
+
+    - name: partitioning Spectrum protect Container, archive log and config  Volume
+      parted:
+        device: "{{ standard_disk }}"
+        number: 1
+        flags: [ lvm ]
+        state: present
+
+    - name: Creating Spectrum protect Container, archive log and config  Volume Group
+      lvg:
+        vg: "{{ standard_vg }}"
+        pvs: "{{ standard_disk }}1"
+
+    - name: Create Archive Log
+      lvol:
+        vg: "{{ standard_vg }}"
+        lv: arch_log_lv
+        size: 50G
+
+    - name: Create Container1
+      lvol:
+        vg: "{{ standard_vg }}"
+        lv: container1_lv
+        size: 100G
+
+    - name: Create Container2
+      lvol:
+        vg: "{{ standard_vg }}"
+        lv: container2_lv
+        size: 100G
