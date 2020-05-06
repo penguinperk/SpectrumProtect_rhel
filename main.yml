@@ -1,6 +1,10 @@
 ---
 - hosts: app1
   become: yes
+  
+  vars_files: 
+    - vars/default.config.yml
+    - vault.yml
 
   tasks:
     - name: Disable SELinux
@@ -26,6 +30,13 @@
         name:
         - ksh
         - lvm2
+        - python3-pip
+
+    - name: installing pip packages 
+      pip:
+        name:
+          - boto3
+          - botocore
 
     - name: more complex items to add several users
       user:
@@ -46,7 +57,6 @@
         mode: "774"
         owner: tsminst1
         group: tsmgrp
-        recurse: yes
       with_items:
         - '/tsm/db'
         - '/tsm/db/db1'
@@ -61,32 +71,57 @@
         - '/tsm/dbbackup'
         - '/tsm/dbbackup/dbbackup1'
 
-    - name: partitioning Spectrum protect DB Volume
-      parted:
-        device: /dev/xvdc
-        number: 1
-        flags: [ lvm ] 
-        state: present
+    - name: Create LVM Volumes for Spectrum Protect
+      include_tasks: tasks/lvm.yml
 
-    - name: Create SSD Partitions
-      lvg:
-        vg: container_vg
-        pvs: /dev/xvdc1
+    - name: Formating LVM Volumes for Spectrum Protect
+      include_tasks: tasks/mkfs.yml
+
+    - name: Creataing Spectrum Protect Download Directories
+      file:
+        path: /tmp//SP_Server
+        state: directory
+        recurse: yes
+        mode: "776"
+        owner: lrsperkins
+        group: lrsperkins
     
-    - name: Create Archive Log 
-      lvol:
-        vg: container_vg
-        lv: arch_log_lv
-        size: 50G
+    - name: Validate if file has been downloaded
+      stat:
+        path: /tmp/SP_Server/SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
+      register: stat_results
 
-    - name: Create Container1
-      lvol:
-        vg: container_vg
-        lv: container1_lv 
-        size: 100G
+    - name: copy Spectrum Protect from S3
+      aws_s3:
+        aws_access_key: "{{ access_AWS }}"
+        aws_secret_key: "{{ secret_AWS }}"
+        bucket: lrs-spectrumprotect-build
+        object: /SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
+        dest: /tmp/SP_Server/SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
+        mode: get
+      when: not stat_results.stat.exists
 
-    - name: Create Container2
-      lvol:
-        vg: container_vg
-        lv: container2_lv 
-        size: 100G
+    - name: change permissions of Spectrum Protect file for extraction
+      file:
+        path: /tmp/SP_Server/SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
+        mode: '777'
+        owner: ec2-user
+        group: ec2-user
+
+        #- name: Unarchive
+        # unarchive:
+        # src: /tmp/SP_Server/SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
+        # dest: /tmp/SP_Server
+        # remote_src: yes
+        # mode: 777
+
+    - name: Extract Spectrum Protect Application
+      shell:
+        cmd: ./SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
+        chdir: /tmp/SP_Server
+      register: SP_extract
+
+
+
+      # - debug:
+      #  var: SP_extract

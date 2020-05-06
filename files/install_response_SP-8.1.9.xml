@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent-input clean="true" temporary="true">
+
+  <variables>
+    <!--@ATTENTION@ Select your product license before doing a silent install. -->
+    <!-- If you want to install a component make sure the variable modify="false" set for each component in the response file. -->
+    <!-- If you do not want to install a component make sure the variable modify="true" set for each component in the response file. -->
+    <!-- Enter 'tsm' for the value of license.selection to accept the IBM Tivoli Storage Manager license -->
+    <!-- Enter 'tsmee' for the value of license.selection to accept the IBM Tivoli Storage Manager Extended Edition license -->
+    <!-- Enter 'ssam' for the value of license.selection to accept the IBM System Storage Archive Manager license -->
+    <variable name='license.selection' value=''/>
+
+    <!-- Set these variables if you are installing the OC.-->
+    <variable name="port" value="11090" /> 
+    <variable name="ssl.password" value="" /> 
+
+    <!-- Update the value of installDir to change the installation directory.-->
+    <variable name='installDir' value='/opt/tivoli/tsm'>
+      <!-- For Windows, update this value to change the installation directory.-->
+      <if name='platform:os' equals='win32' value='C:\Program Files\Tivoli\TSM'/>
+    </variable>
+  </variables>
+      
+  <server>
+    <repository location='repository'/>
+  </server>
+
+  <profile id='IBM Tivoli Storage Manager' installLocation='${installDir}' >
+    <data key='user.license,com.tivoli.dsm.server' value='${license.selection}'/>
+
+    <!-- @ATTENTION@ If you are upgrading an exsting server instance, replace <instanceName>-->
+    <!-- with the instance name you are upgrading below.  If you are upgrading multiple instances -->
+    <!-- you can add additional instanceName_update and instanceName_password lines below for each -->
+    <!-- additional instance.                                                                     -->
+    <!--data key='user.<instanceName>_update,com.tivoli.dsm.server' value='true'/-->
+    <!-- Update this value with the instance users password. -->
+    <!--data key='user.<instanceName>_password,com.tivoli.dsm.server' value=''/-->
+
+    <!-- Operations Center profile variables. --> 
+    <data key="user.securePortNumber,com.tivoli.dsm.gui.offering" value="${port}" />
+    <data key="user.SSL_PASSWORD" value="${ssl.password}" /> 
+
+  </profile>
+      <install modify='false'>
+
+  <!--  This will install the server offering -->
+    <offering id='com.tivoli.dsm.server' 
+    profile='IBM Tivoli Storage Manager' 
+    features='com.tivoli.dsm.server.main' 
+    installFixes='none' selected='true'/>
+
+  <!-- Change selected='false' to skip install of the storage agent offering -->
+    <offering id='com.tivoli.dsm.stagent' 
+  profile='IBM Tivoli Storage Manager' 
+    features='com.tivoli.dsm.stagent.main' 
+    installFixes='none' selected='false'/>
+    <!-- installFixes='none' selected='true'/>
+
+  <!-- Change selected='false' to skip install of the device offering -->
+    <offering id='com.tivoli.dsm.devices' 
+    profile='IBM Tivoli Storage Manager' 
+    features='com.tivoli.dsm.devices.main' 
+    installFixes='none' selected='false'/>
+    <!-- installFixes='none' selected='true'/>
+
+  <!--  This will install the license offering -->
+    <offering id='com.tivoli.dsm.license' 
+    profile='IBM Tivoli Storage Manager' 
+    features='com.tivoli.dsm.license.main' 
+    installFixes='none' selected='true'/>
+
+  <!-- Change selected='false' to skip install of the Language offering -->
+    <!-- Language Feature names: 
+     com.tivoli.dsm.lang.spanish
+     com.tivoli.dsm.lang.portuguese
+     com.tivoli.dsm.lang.german
+     com.tivoli.dsm.lang.french
+     com.tivoli.dsm.lang.italian
+     com.tivoli.dsm.lang.russian
+     com.tivoli.dsm.lang.japanese
+     com.tivoli.dsm.lang.korean
+     com.tivoli.dsm.lang.tchinese
+     com.tivoli.dsm.lang.schinese
+    -->
+  
+    <offering id='com.tivoli.dsm.lang' 
+    profile='IBM Tivoli Storage Manager' 
+    features='' 
+    installFixes='none' selected='false'/>
+    <!-- installFixes='none' selected='true'/>
+
+  <!-- Change selected='false' to skip install of the Operation center offering -->
+    <offering id='com.tivoli.dsm.gui.offering' 
+    profile='IBM Tivoli Storage Manager' 
+    features='com.tivoli.dsm.gui.main_asm,com.ibm.java.jre' 
+    installFixes='none' selected='true'/>
+</install>
+
+<preference name='com.ibm.cic.common.core.preferences.connectTimeout' value='30'/>
+<preference name='com.ibm.cic.common.core.preferences.readTimeout' value='45'/>
+<preference name='com.ibm.cic.common.core.preferences.downloadAutoRetryCount' value='0'/>
+<preference name='offering.service.repositories.areUsed' value='false'/>
+<preference name='com.ibm.cic.common.core.preferences.ssl.nonsecureMode' value='false'/>
+<preference name='com.ibm.cic.common.core.preferences.http.disablePreemptiveAuthentication' value='false'/>
+<preference name='http.ntlm.auth.kind' value='NTLM'/>
+<preference name='http.ntlm.auth.enableIntegrated.win32' value='true'/>
+<preference name='com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts' value='false'/>
+<preference name='com.ibm.cic.common.core.preferences.keepFetchedFiles' value='false'/>
+<preference name='PassportAdvantageIsEnabled' value='false'/>
+<preference name='com.ibm.cic.common.core.preferences.searchForUpdates' value='false'/>
+<preference name='com.ibm.cic.agent.ui.displayInternalVersion' value='false'/>
+<preference name='com.ibm.cic.common.sharedUI.showErrorLog' value='true'/>
+<preference name='com.ibm.cic.common.sharedUI.showWarningLog' value='true'/>
+<preference name='com.ibm.cic.common.sharedUI.showNoteLog' value='true'/>
+</agent-input>
