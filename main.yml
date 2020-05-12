@@ -1,5 +1,5 @@
 ---
-- hosts: app1
+- hosts: IBMTest
   become: yes
   
   vars_files: 
@@ -10,6 +10,7 @@
     - name: Disable SELinux
       selinux:
         state: disabled
+      when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
     
     - name: add groups
       group:
@@ -25,18 +26,24 @@
         validate: /usr/sbin/visudo -csf %s
 
     - name: Application install
-      yum: 
+      package: 
         state: present
         name:
         - ksh
         - lvm2
+        - python3.x86_64
         - python3-pip
+      vars:
+        ansible_python_interpreter: /usr/bin/python
+
 
     - name: installing pip packages 
       pip:
         name:
           - boto3
           - botocore
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
 
     - name: more complex items to add several users
       user:
@@ -50,7 +57,7 @@
 
   #TODO: set password
   #
-    - name: Creataing Spectrum Protect Directories
+    - name: Creating Spectrum Protect Directories
       file:
         path: "{{ item }}"
         state: directory
@@ -77,9 +84,9 @@
     - name: Formating LVM Volumes for Spectrum Protect
       include_tasks: tasks/mkfs.yml
 
-    - name: Creataing Spectrum Protect Download Directories
+    - name: Creating Spectrum Protect Download Directories
       file:
-        path: /tmp//SP_Server
+        path: /tmp/SP_Server
         state: directory
         recurse: yes
         mode: "776"
@@ -96,17 +103,19 @@
         aws_access_key: "{{ access_AWS }}"
         aws_secret_key: "{{ secret_AWS }}"
         bucket: lrs-spectrumprotect-build
-        object: /SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
+        object: Downloads/SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
         dest: /tmp/SP_Server/SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
         mode: get
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
       when: not stat_results.stat.exists
 
     - name: change permissions of Spectrum Protect file for extraction
       file:
         path: /tmp/SP_Server/SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
         mode: '777'
-        owner: ec2-user
-        group: ec2-user
+        owner: lrsperkins
+        group: lrsperkins
 
         #- name: Unarchive
         # unarchive:
@@ -119,6 +128,9 @@
       shell:
         cmd: ./SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
         chdir: /tmp/SP_Server
+      args:
+        chdir: /tmp/SP_Server
+        creates: install.sh
       register: SP_extract
 
 

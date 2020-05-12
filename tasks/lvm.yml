@@ -29,6 +29,24 @@
         lv: db1_lv
         size: 25G
 
+    - name: Create DataBase LVM
+      lvol:
+        vg: "{{ ssd_vg }}"
+        lv: db2_lv
+        size: 25G
+
+    - name: Create DataBase LVM
+      lvol:
+        vg: "{{ ssd_vg }}"
+        lv: db3_lv
+        size: 25G
+    
+    - name: Create DataBase LVM
+      lvol:
+        vg: "{{ ssd_vg }}"
+        lv: db4_lv
+        size: 25G
+
     - name: partitioning Spectrum protect Container, archive log and config  Volume
       parted:
         device: "{{ standard_disk }}"

@@ -1,7 +1,17 @@
-ssd_disk: '/dev/xvdb'
+ssd_disk: '/dev/xvde'
 ssd_vg: 'db_vg'
 standard_disk: '/dev/xvdc'
 standard_vg: container_vg
 
 SpectrumProtectApp: files/SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
 
+SP_Volumes:
+ - /dev/db_vg/db1_lv
+ - /dev/db_vg/db2_lv
+ - /dev/db_vg/db3_lv
+ - /dev/db_vg/db4_lv
+ - /dev/db_vg/config_lv
+ - /dev/db_vg/actlog_lv
+ - /dev/container_vg/arch_log_lv
+ - /dev/container_vg/container1_lv
+ - /dev/container_vg/container2_lv

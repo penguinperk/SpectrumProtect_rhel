@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  tasks:
+    - name: put object in S3
+      aws_s3:
+       aws_access_key: AKIAW6KOUGGUTZMB3EJY
+       aws_secret_key: XM5DP1Cp+8vl3o5dVTiJAoUa1s7quNk7AvSvSp
+       bucket: lrs-spectrumprotect-build
+       object: srv_blueprint_xlinux_v41.pdf
+       dest: /home/lrsperkins/
+       mode: list
