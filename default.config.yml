@@ -1,0 +1,7 @@
+ssd_disk: '/dev/xvdb'
+ssd_vg: 'db_vg'
+standard_disk: '/dev/xvdc'
+standard_vg: container_vg
+
+SpectrumProtectApp: files/SP_8.1.9_LIN86_SERSTG_AGT_ML.bin
+
