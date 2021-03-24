@@ -1,5 +1,5 @@
 ---
-- hosts: IBMTest
+- hosts: all
   become: yes
   
   vars_files: 
@@ -10,7 +10,8 @@
     - name: Disable SELinux
       selinux:
         state: disabled
-      when: ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'CentOS'
+      register: result
+      failed_when: result.msg | default('ok', True) is not search('(^ok$|libselinux-python|(SELinux state changed))')
     
     - name: add groups
       group:
@@ -81,9 +82,9 @@
     - name: Create LVM Volumes for Spectrum Protect
       include_tasks: tasks/lvm.yml
 
-    - name: Formating LVM Volumes for Spectrum Protect
+    - name: Formating Volumes for Spectrum Protect 
       include_tasks: tasks/mkfs.yml
-
+    
     - name: Creating Spectrum Protect Download Directories
       file:
         path: /tmp/SP_Server

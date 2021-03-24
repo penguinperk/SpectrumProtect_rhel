@@ -1,5 +1,15 @@
-ssd_disk: '/dev/xvdb1'
+ssd_disk: '/dev/xvdb'
 ssd_vg: 'db_vg'
 standard_disk: '/dev/xvdc'
 standard_vg: container_vg
 
+SP_Volumes: 
+  - /dev/container_vg/container1_lv
+  - /dev/container_vg/container2_lv
+  - /dev/container_vg/arch_log_lv
+  - /dev/db_vg/db1_lv
+  - /dev/db_vg/db2_lv
+  - /dev/db_vg/db3_lv
+  - /dev/db_vg/db4_lv
+  - /dev/db_vg/config_lv
+  - /dev/db_vg/actlog_lv
